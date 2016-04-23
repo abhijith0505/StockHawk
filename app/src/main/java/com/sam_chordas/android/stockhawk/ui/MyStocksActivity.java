@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -15,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +36,8 @@ import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
+
+import java.util.ArrayList;
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -86,6 +90,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
       getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
       mCursorAdapter = new QuoteCursorAdapter(this, null);
+
+
+
       recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
               new RecyclerViewItemClickListener.OnItemClickListener() {
                 @Override
@@ -95,6 +102,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 }
               }));
       recyclerView.setAdapter(mCursorAdapter);
+
 
 
       FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);

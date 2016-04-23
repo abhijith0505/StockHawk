@@ -1,11 +1,13 @@
 package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,8 @@ import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperAdapter;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
+
+import java.util.ArrayList;
 
 /**
  * Created by sam_chordas on 10/6/15.
@@ -28,12 +32,21 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
 
   private static Context mContext;
   private static Typeface robotoLight;
+  ArrayList<String> data;
+  SharedPreferences sharedPreferences;
+  SharedPreferences.Editor editor;
+  int size;
+
   //private final OnStartDragListener mDragListener;
   private boolean isPercent;
   public QuoteCursorAdapter(Context context, Cursor cursor){
     super(context, cursor);
     //mDragListener = dragListener;
     mContext = context;
+    size=0;
+    sharedPreferences = mContext.getSharedPreferences("widget", Context.MODE_PRIVATE);
+    editor = sharedPreferences.edit();
+    data = new ArrayList<String>();
   }
 
   @Override
@@ -42,6 +55,8 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     View itemView = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.list_item_quote, parent, false);
     ViewHolder vh = new ViewHolder(itemView);
+
+  size =0 ;
     return vh;
   }
 
@@ -49,6 +64,16 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
   public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor){
     viewHolder.symbol.setText(cursor.getString(cursor.getColumnIndex("symbol")));
     viewHolder.bidPrice.setText(cursor.getString(cursor.getColumnIndex("bid_price")));
+
+
+    //data.add(cursor.getString(cursor.getColumnIndex("symbol"))+cursor.getString(cursor.getColumnIndex("bid_price")));
+    getData(cursor.getString(cursor.getColumnIndex("symbol")),cursor.getString(cursor.getColumnIndex("bid_price")));
+   // editor.putString("item_"+size,cursor.getString(cursor.getColumnIndex("symbol"))+": "+cursor.getString(cursor.getColumnIndex("bid_price")));
+    Log.d("quote",cursor.getString(cursor.getColumnIndex("symbol"))+cursor.getString(cursor.getColumnIndex("bid_price")));
+
+   /* editor.putInt("size",size);
+    editor.commit();*/
+
     int sdk = Build.VERSION.SDK_INT;
     if (cursor.getInt(cursor.getColumnIndex("is_up")) == 1){
       if (sdk < Build.VERSION_CODES.JELLY_BEAN){
@@ -73,6 +98,19 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
       viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("change")));
     }
   }
+
+public void getData(String s, String p){
+
+
+
+  size++;
+    editor.putString("item_"+size,s+": "+p);
+
+  editor.putInt("size",size);
+  editor.commit();
+
+}
+
 
   @Override public void onItemDismiss(int position) {
     Cursor c = getCursor();
