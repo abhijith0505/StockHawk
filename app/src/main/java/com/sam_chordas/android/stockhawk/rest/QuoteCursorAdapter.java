@@ -1,5 +1,7 @@
 package com.sam_chordas.android.stockhawk.rest;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -18,6 +20,7 @@ import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperAdapter;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
+import com.sam_chordas.android.stockhawk.widget.WidgetProvider;
 
 import java.util.ArrayList;
 
@@ -47,6 +50,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     sharedPreferences = mContext.getSharedPreferences("widget", Context.MODE_PRIVATE);
     editor = sharedPreferences.edit();
     data = new ArrayList<String>();
+
   }
 
   @Override
@@ -56,6 +60,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         .inflate(R.layout.list_item_quote, parent, false);
     ViewHolder vh = new ViewHolder(itemView);
 
+
   size =0 ;
     return vh;
   }
@@ -64,15 +69,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
   public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor){
     viewHolder.symbol.setText(cursor.getString(cursor.getColumnIndex("symbol")));
     viewHolder.bidPrice.setText(cursor.getString(cursor.getColumnIndex("bid_price")));
-
-
-    //data.add(cursor.getString(cursor.getColumnIndex("symbol"))+cursor.getString(cursor.getColumnIndex("bid_price")));
-    getData(cursor.getString(cursor.getColumnIndex("symbol")),cursor.getString(cursor.getColumnIndex("bid_price")));
-   // editor.putString("item_"+size,cursor.getString(cursor.getColumnIndex("symbol"))+": "+cursor.getString(cursor.getColumnIndex("bid_price")));
-    Log.d("quote",cursor.getString(cursor.getColumnIndex("symbol"))+cursor.getString(cursor.getColumnIndex("bid_price")));
-
-   /* editor.putInt("size",size);
-    editor.commit();*/
+    getData();
 
     int sdk = Build.VERSION.SDK_INT;
     if (cursor.getInt(cursor.getColumnIndex("is_up")) == 1){
@@ -99,17 +96,22 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     }
   }
 
-public void getData(String s, String p){
+public void getData(){
 
-
-
+  Cursor c = getCursor();
+  Log.i("added",  c.getString(c.getColumnIndex(QuoteColumns.SYMBOL))+"->"+c.getString(c.getColumnIndex(QuoteColumns.BIDPRICE))+"_>"+size);
+  editor.putString("item_"+size,c.getString(c.getColumnIndex(QuoteColumns.SYMBOL)).toUpperCase()+": "+c.getString(c.getColumnIndex(QuoteColumns.BIDPRICE)));
   size++;
-    editor.putString("item_"+size,s+": "+p);
-
   editor.putInt("size",size);
   editor.commit();
+  Context context = mContext;
+  AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+  ComponentName thisWidget = new ComponentName(context, WidgetProvider.class);
+  int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+  appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
 
 }
+
 
 
   @Override public void onItemDismiss(int position) {

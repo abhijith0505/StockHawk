@@ -1,6 +1,8 @@
 package com.sam_chordas.android.stockhawk.ui;
 
 import android.app.LoaderManager;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -36,6 +38,7 @@ import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
+import com.sam_chordas.android.stockhawk.widget.WidgetProvider;
 
 import java.util.ArrayList;
 
@@ -172,6 +175,15 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     }
   }
 
+  @Override
+  public void onBackPressed() {
+    super.onBackPressed();
+    Context context = mContext;
+    AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+    ComponentName thisWidget = new ComponentName(context, WidgetProvider.class);
+    int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+    appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
+  }
 
   @Override
   public void onResume() {

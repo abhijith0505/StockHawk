@@ -29,7 +29,8 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
     public WidgetDataProvider(Context context, Intent intent) {
         mContext = context;
-      //  initData();
+        mCollections = new ArrayList<>();
+        initData();
     }
     @Override
     public void onCreate() {
@@ -65,11 +66,15 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
     }
 
     private void initData() {
+
         mCollections.clear();
+
         SharedPreferences sharedPreferences = mContext.getSharedPreferences("widget", Context.MODE_PRIVATE);
         int c = sharedPreferences.getInt("size",0);
-        for(int i=1;i<=c;++i){
-            mCollections.add(sharedPreferences.getString("item_"+i,null)+"_"+i);
+
+        for(int i=1;i<c;++i){
+            mCollections.add(sharedPreferences.getString("item_"+i,null));
+            Log.i("received",sharedPreferences.getString("item_"+i,null));
         }
     }
 
