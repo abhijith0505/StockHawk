@@ -45,8 +45,10 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
     @Override
     public void onDestroy() {
-
+        initData();
     }
+
+
 
     @Override
     public int getCount() {

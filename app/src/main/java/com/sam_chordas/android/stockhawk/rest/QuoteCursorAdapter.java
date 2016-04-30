@@ -36,6 +36,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
   private static Context mContext;
   private static Typeface robotoLight;
   ArrayList<String> data;
+
   SharedPreferences sharedPreferences;
   SharedPreferences.Editor editor;
   int size;
@@ -111,6 +112,13 @@ public void getData(){
   appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
 
 }
+
+  public String getItem(int position){
+    Cursor c = getCursor();
+    c.moveToPosition(position);
+    String symbol = c.getString(c.getColumnIndex(QuoteColumns.SYMBOL));
+    return symbol;
+  }
 
 
 
